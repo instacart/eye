@@ -36,6 +36,7 @@ jobs:
           echo "$group_specs"
           echo "=== Running $(echo "$group_specs" | wc -w) spec files ==="
           bundle exec rspec --force-color \
+            --format progress \
             --format json --out /tmp/rspec_results.json \
             $group_specs
       - name: Upload spec timing
