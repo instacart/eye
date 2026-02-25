@@ -31,15 +31,19 @@ jobs:
           GROUP: ${{ matrix.group }}
           TOTAL_GROUPS: 4
         run: |
-          specs=$(find spec -name '*_spec.rb' \
-            -not -path 'spec/support/*' \
-            -not -path 'spec/example/*' \
-            -not -path 'spec/fixtures/*' | sort)
-          group_specs=$(echo "$specs" | awk "NR % $TOTAL_GROUPS == ($GROUP - 1)")
+          group_specs=$(ruby ci/split_specs.rb)
           echo "=== Group $GROUP/$TOTAL_GROUPS ==="
           echo "$group_specs"
-          echo "=== Running $(echo "$group_specs" | wc -l) spec files ==="
-          bundle exec rspec --force-color $group_specs
+          echo "=== Running $(echo "$group_specs" | wc -w) spec files ==="
+          bundle exec rspec --force-color \
+            --format json --out /tmp/rspec_results.json \
+            $group_specs
+      - name: Upload spec timing
+        if: always() && matrix.ruby == '3.4'
+        uses: actions/upload-artifact@v4
+        with:
+          name: rspec-timings-group-${{ matrix.group }}
+          path: /tmp/rspec_results.json
   rubocop:
     runs-on: ubuntu-latest
     steps:
