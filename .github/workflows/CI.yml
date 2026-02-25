@@ -39,7 +39,7 @@ jobs:
           echo "=== Group $GROUP/$TOTAL_GROUPS ==="
           echo "$group_specs"
           echo "=== Running $(echo "$group_specs" | wc -l) spec files ==="
-          bundle exec rspec $group_specs
+          bundle exec rspec --force-color $group_specs
   rubocop:
     runs-on: ubuntu-latest
     steps:
