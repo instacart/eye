@@ -103,7 +103,7 @@ describe "Flapping" do
       sleep 3
     end
 
-    sleep 2
+    sleep 4
 
     @process.state_name.should == :up
     @process.load_pid_from_file.should == @process.pid
