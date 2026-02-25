@@ -32,6 +32,6 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'ruby-graphviz'
   gem.add_development_dependency 'forking'
   gem.add_development_dependency 'simplecov', '~> 0.22'
-  gem.add_development_dependency 'rubocop', '~> 1.20.0'
+  gem.add_development_dependency 'rubocop', '~> 1.84'
   gem.add_development_dependency 'rubocop-performance'
 end

@@ -1,3 +1,8 @@
+inherit_from: .rubocop_todo.yml
+
+plugins:
+  - rubocop-performance
+
 AllCops:
   NewCops: disable
   Include:
@@ -47,7 +52,7 @@ Layout/AccessModifierIndentation:
 Layout/EndAlignment:
   EnforcedStyleAlignWith: variable
 
-Layout/IndentHash:
+Layout/FirstHashElementIndentation:
   EnforcedStyle: consistent
 
 Style/Lambda:
@@ -75,7 +80,7 @@ Style/PercentLiteralDelimiters:
     '%r': '[]'
     '%': '{}'
 
-Metrics/LineLength:
+Layout/LineLength:
   Max: 142
 
 Metrics/BlockLength:
@@ -113,7 +118,6 @@ Style/GuardClause:
 
 Lint/RescueException:
   Exclude:
-    - 'lib/eye/checker/socket.rb'
     - 'lib/eye/controller/load.rb'
     - 'lib/eye/logger.rb'
 
@@ -151,13 +155,11 @@ Style/SpecialGlobalVars:
 Style/RescueModifier:
   Enabled: false
 
-Lint/HandleExceptions:
+Lint/SuppressedException:
   Enabled: false
 
 Lint/LiteralInInterpolation:
   Exclude:
-    - 'lib/eye/notify/jabber.rb'
-    - 'lib/eye/notify/slack.rb'
     - 'lib/eye/process/commands.rb'
 
 Style/FrozenStringLiteralComment:
