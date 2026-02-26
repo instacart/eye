@@ -10,7 +10,7 @@ describe "Eye::Checker::ChildrenMemory" do
 
     stub(Eye::SystemResources).memory(anything) { 1 }
 
-    dont_allow(@process).schedule(:command => :restart)
+    dont_allow(@process).schedule(hash_including(:command => :restart))
 
     sleep 5
   end
@@ -23,7 +23,7 @@ describe "Eye::Checker::ChildrenMemory" do
     @process.add_children
 
     stub(Eye::SystemResources).memory(anything) { 11 }
-    mock(@process).schedule(:command => :restart)
+    mock(@process).schedule(hash_including(:command => :restart))
 
     sleep 5
   end

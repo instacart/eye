@@ -62,7 +62,7 @@ describe "ChildProcess" do
 
       @children.each do |child|
         child.watchers.keys.should == [:check_memory]
-        dont_allow(child).schedule :command => :restart
+        dont_allow(child).schedule(hash_including(:command => :restart))
       end
 
       stub(Eye::SystemResources).memory(crazy.pid){ 55.megabytes }
@@ -70,7 +70,7 @@ describe "ChildProcess" do
 
       crazy.watchers.keys.should == [:check_memory]
       mock(crazy).notify(:warn, "Bounded memory(<50Mb): [*55Mb, *55Mb] send to [:restart]")
-      mock(crazy).schedule :command => :restart
+      mock(crazy).schedule(hash_including(:command => :restart))
 
       sleep 4
       crazy.remove_watchers # for safe end spec

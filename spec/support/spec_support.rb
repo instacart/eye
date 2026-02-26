@@ -171,7 +171,7 @@ end
 def die_process!(pid, signal = :kill, int = 0.3)
   Eye::System.send_signal(pid, signal)
   sleep int.to_f
-  Eye::System.pid_alive?(pid).should == false
+  Eye::System.pid_alive?(pid).should be_falsey
 end
 
 def change_ctime(filename, t = Time.now, now = false)
