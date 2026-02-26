@@ -31,7 +31,6 @@ class Eye::Controller
 end
 
 # require 'rspec/mocks'
-require 'fakeweb'
 require 'ostruct'
 
 require File.join(File.dirname(__FILE__), %w{support spec_support})
@@ -78,8 +77,6 @@ RSpec.configure do |config|
     @log = C.base[:stdout]
     FileUtils.rm(@log) rescue nil
     @pids = []
-    Eye::Dsl::ProcessOpts.unique_num = 0
-
     stub(Eye::Local).dir { C.sample_dir }
 
     $logger.info "================== #{ self.class.description} '#{ example.description }'========================"
@@ -103,7 +100,6 @@ RSpec.configure do |config|
   end
 
   config.after(:all) do
-    FakeWeb.allow_net_connect = true
   end
 end
 

@@ -2,24 +2,11 @@ class Eye::Checker
 
   include Eye::Dsl::Validation
 
-  autoload :Memory,     'eye/checker/memory'
-  autoload :Cpu,        'eye/checker/cpu'
-  autoload :Http,       'eye/checker/http'
-  autoload :FileCTime,  'eye/checker/file_ctime'
-  autoload :FileSize,   'eye/checker/file_size'
-  autoload :FileTouched, 'eye/checker/file_touched'
-  autoload :Socket,     'eye/checker/socket'
-  autoload :SslSocket,  'eye/checker/ssl_socket'
-  autoload :Nop,        'eye/checker/nop'
-  autoload :Runtime,    'eye/checker/runtime'
-  autoload :Cputime,    'eye/checker/cputime'
-  autoload :ChildrenCount, 'eye/checker/children_count'
+  autoload :Memory,         'eye/checker/memory'
+  autoload :Nop,            'eye/checker/nop'
   autoload :ChildrenMemory, 'eye/checker/children_memory'
 
-  TYPES = { memory: 'Memory', cpu: 'Cpu', http: 'Http',
-            ctime: 'FileCTime', fsize: 'FileSize', file_touched: 'FileTouched',
-            socket: 'Socket', nop: 'Nop', runtime: 'Runtime', cputime: 'Cputime',
-            children_count: 'ChildrenCount', children_memory: 'ChildrenMemory', ssl_socket: 'SslSocket' }
+  TYPES = { memory: 'Memory', nop: 'Nop', children_memory: 'ChildrenMemory' }
 
   attr_accessor :value, :values, :options, :pid, :type, :check_count, :process
 

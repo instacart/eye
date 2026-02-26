@@ -18,7 +18,7 @@ module C
   end
 
   def p
-    {1 => p1, 2 => p2, 3 => p3, 4 => p4, 5 => p5}
+    {1 => p1, 2 => p2, 3 => p3}
   end
 
   def base
@@ -94,44 +94,6 @@ module C
     )
   end
 
-  # event machine
-  def p4_ports
-    [31231 + process_id * 3, 31232 + process_id * 3, 31233 + process_id * 3]
-  end
-
-  def p4_sock
-    "/tmp/em_test_sock_spec#{process_id}"
-  end
-
-  def p4
-    base.merge(
-      :pid_file => "#{sample_dir}/em#{process_id}.pid",
-      :name => "em",
-      :start_command => "ruby em.rb #{p4_ports[0]} #{p4_ports[1]} #{p4_sock} #{p4_ports[2]}",
-      :daemonize => true,
-      :start_grace => 3.5,
-      :stop_grace => 0.7
-    )
-  end
-
-  # thin
-  def p5_port
-    31334 + process_id
-  end
-
-  def p5_pid
-    "thin#{process_id}.pid"
-  end
-
-  def p5
-    base.merge(
-      :pid_file => sample_dir + "/" + p5_pid,
-      :name => "thin",
-      :start_command => "bundle exec thin start -R thin.ru -p #{p5_port} -l thin.log -P #{p5_pid}",
-      :daemonize => true,
-    )
-  end
-
   def p6_word
     '1234_my_sleppie'
   end
@@ -146,38 +108,6 @@ module C
 
   def check_mem(a = {})
     {:memory => {:type => :memory, :every => 2.seconds, :below => 100.megabytes, :times => [3,5]}.merge(a)}
-  end
-
-  def check_cpu(a = {})
-    {:cpu => {:type => :cpu, :every => 2.seconds, :below => 80, :times => [4,5]}.merge(a)}
-  end
-
-  def check_ctime(a = {})
-    {:ctime => {:type => :ctime, :every => 2, :file => log_name, :times => [3,5]}.merge(a)}
-  end
-
-  def check_fsize(a = {})
-    {:fsize => {:type => :fsize, :every => 2, :file => log_name, :times => [3,5]}.merge(a)}
-  end
-
-  def check_http(a = {})
-    {:http => {
-      :type => :http, :every => 2, :times => 1,
-      :url => "http://localhost:3000/bla", :kind => :sucess,
-      :pattern => /OK/, :timeout => 3.seconds
-    }.merge(a)
-    }
-  end
-
-  def check_sock(a = {})
-    {:socket => {:type => :socket, :every => 5.seconds,
-     :times => 1, :addr => "tcp://127.0.0.1:#{p4_ports[0]}", :send_data => "ping",
-     :expect_data => /pong/, :timeout => 2}.merge(a)
-    }
-  end
-
-  def check_children_count(a = {})
-    {:children_count => {:type => :children_count, :every => 2.seconds, :below => 5, :times => 2}.merge(a)}
   end
 
   def check_children_memory(a = {})

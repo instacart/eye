@@ -5,11 +5,7 @@ class Eye::Notify
   include Celluloid
   include Eye::Dsl::Validation
 
-  autoload :Mail,     'eye/notify/mail'
-  autoload :Jabber,   'eye/notify/jabber'
-  autoload :Slack,    'eye/notify/slack'
-
-  TYPES = { mail: 'Mail', jabber: 'Jabber', slack: 'Slack' }
+  TYPES = {}
 
   def self.get_class(type)
     klass = eval("Eye::Notify::#{TYPES[type]}") rescue nil

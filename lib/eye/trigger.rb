@@ -2,15 +2,13 @@ class Eye::Trigger
 
   include Eye::Dsl::Validation
 
-  autoload :Flapping,   'eye/trigger/flapping'
-  autoload :Transition, 'eye/trigger/transition'
-  autoload :StopChildren, 'eye/trigger/stop_children'
-  autoload :WaitDependency, 'eye/trigger/wait_dependency'
-  autoload :CheckDependency, 'eye/trigger/check_dependency'
+  autoload :Flapping,      'eye/trigger/flapping'
+  autoload :Transition,    'eye/trigger/transition'
+  autoload :StopChildren,  'eye/trigger/stop_children'
   autoload :StartingGuard, 'eye/trigger/starting_guard'
 
   TYPES = { flapping: 'Flapping', transition: 'Transition', stop_children: 'StopChildren',
-            wait_dependency: 'WaitDependency', check_dependency: 'CheckDependency', starting_guard: 'StartingGuard' }
+            starting_guard: 'StartingGuard' }
 
   attr_reader :message, :options, :process
 

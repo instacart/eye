@@ -18,7 +18,6 @@ Eye.application 'test' do
   stdall 'trash.log' # stdout,err logs for processes by default
   env 'APP_ENV' => 'production' # global env for each processes
   trigger :flapping, times: 10, within: 1.minute, retry_in: 10.minutes
-  check :cpu, every: 10.seconds, below: 100, times: 3 # global check for all processes
 
   group 'samples' do
     chain grace: 5.seconds # chained start-restart with 5s interval, one by one.
@@ -34,8 +33,7 @@ Eye.application 'test' do
       daemonize true
       stdall 'sample1.log'
 
-      # ensure the CPU is below 30% at least 3 out of the last 5 times checked
-      check :cpu, below: 30, times: [3, 5]
+      check :memory, every: 20.seconds, below: 300.megabytes, times: [3, 5]
     end
 
     # self daemonized process
@@ -65,25 +63,4 @@ Eye.application 'test' do
     end
   end
 
-  # eventmachine process, daemonized with eye
-  process :event_machine do
-    pid_file 'em.pid'
-    start_command 'ruby em.rb'
-    stdout 'em.log'
-    daemonize true
-    stop_signals [:QUIT, 2.seconds, :KILL]
-
-    check :socket, addr: 'tcp://127.0.0.1:33221', every: 10.seconds, times: 2,
-                   timeout: 1.second, send_data: 'ping', expect_data: /pong/
-  end
-
-  # thin process, self daemonized
-  process :thin do
-    pid_file 'thin.pid'
-    start_command 'bundle exec thin start -R thin.ru -p 33233 -d -l thin.log -P thin.pid'
-    stop_signals [:QUIT, 2.seconds, :TERM, 1.seconds, :KILL]
-
-    check :http, url: 'http://127.0.0.1:33233/hello', pattern: /World/,
-                 every: 5.seconds, times: [2, 3], timeout: 1.second
-  end
 end
