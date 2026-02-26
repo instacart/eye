@@ -9,7 +9,7 @@ describe "Custom checks" do
     before :each do
       conf = <<-D
         class CustomCheck < Eye::Checker::Custom
-          param :below, [Fixnum, Float], true
+          param :below, [Integer, Float], true
 
           def initialize(*args)
             super

@@ -72,7 +72,7 @@ describe "Eye::Dsl getters" do
       "bla" => {:name => "bla", :environment=>{"A"=>"1"}, :groups=>{
         "blagr"=>{:name => "blagr", :application => "bla", :environment=>{"A"=>"12"}, :processes=>{
           "blap"=>{:environment=>{"A"=>"123"}, :group=>"blagr", :application=>"bla", :name=>'blap', :pid_file=>"1",
-            :start_command=>"ruby app:bla gr:blagr p:blap {\"A\"=>\"1\"} {\"A\"=>\"12\"} {\"A\"=>\"123\"} 1"}}}}}}
+            :start_command=>"ruby app:bla gr:blagr p:blap {\"A\" => \"1\"} {\"A\" => \"12\"} {\"A\" => \"123\"} 1"}}}}}}
   end
 
   it "getter full_name" do

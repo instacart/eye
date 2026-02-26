@@ -246,7 +246,7 @@ describe "Eye::Dsl checks" do
     conf = <<-E
       class Cpu2 < Eye::Checker::CustomDefer
         # checks :cpu2, :every => 3.seconds, :below => 80, :times => [3,5]
-        param :below, [Fixnum, Float], true
+        param :below, [Integer, Float], true
 
         def check_name
           @check_name ||= "cpu2(\#{human_value(below)})"
@@ -373,7 +373,7 @@ describe "Eye::Dsl checks" do
     it "do not cross if there custom checker already" do
       conf = <<-E
         class Cpu2 < Eye::Checker::CustomDefer
-          param :below, [Fixnum, Float], true
+          param :below, [Integer, Float], true
         end
 
         Eye.application("bla") do
