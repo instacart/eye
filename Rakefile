@@ -2,21 +2,11 @@
 
 require 'bundler/gem_tasks'
 
-task default: :split_test
+task default: :spec
 
-desc 'run parallel tests'
-task :pspec do
-  dirname = File.expand_path(File.dirname(__FILE__))
-  cmd = "bundle exec parallel_rspec -n #{ENV['N'] || 10} --runtime-log '#{dirname}/spec/weights.txt' #{dirname}/spec"
-  abort unless system(cmd)
-end
-
-desc 'run parallel split tests'
-task :split_test do
-  dirname = File.expand_path(File.dirname(__FILE__))
-  ENV['PARALLEL_SPLIT_TEST_PROCESSES'] = (ENV['N'] || 10).to_s
-  cmd = "bundle exec parallel_split_test #{dirname}/spec"
-  abort unless system(cmd)
+desc 'run specs'
+task :spec do
+  abort unless system('bundle exec rspec spec')
 end
 
 task :remove_coverage do

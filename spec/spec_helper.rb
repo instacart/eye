@@ -55,11 +55,6 @@ RSpec.configure do |config|
     expectations.syntax = [:should, :expect]
   end
 
-  if ENV['PROFILE']
-    require 'parallel_tests/rspec/runtime_logger'
-    config.add_formatter ParallelTests::RSpec::RuntimeLogger, "spec/weights.txt"
-  end
-
   config.mock_with RR::Integrations::RSpec2::Mixin
   config.include RR::DSL
 
