@@ -31,7 +31,6 @@ class Eye::Controller
 end
 
 # require 'rspec/mocks'
-require 'fakeweb'
 require 'ostruct'
 
 require File.join(File.dirname(__FILE__), %w{support spec_support})
@@ -103,7 +102,6 @@ RSpec.configure do |config|
   end
 
   config.after(:all) do
-    FakeWeb.allow_net_connect = true
   end
 end
 

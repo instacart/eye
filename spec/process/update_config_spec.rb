@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 describe "#update_config" do
   before :each do
-    @cfg = C.p3.merge(:checks => join(C.check_mem, C.check_cpu), :monitor_children => {})
+    @cfg = C.p3.merge(:checks => C.check_mem, :monitor_children => {})
     start_ok_process(@cfg)
     sleep 6
   end
@@ -12,7 +12,7 @@ describe "#update_config" do
   end
 
   it "update only env" do
-    @process.watchers.keys.should == [:check_alive, :check_identity, :check_children, :check_memory, :check_cpu]
+    @process.watchers.keys.should == [:check_alive, :check_identity, :check_children, :check_memory]
     @process.children.keys.size.should == 3
     child_pids = @process.children.keys
     @process[:environment]["PID_NAME"].should be
@@ -21,7 +21,7 @@ describe "#update_config" do
     sleep 5
 
     @process.state_name.should == :up
-    @process.watchers.keys.should == [:check_alive, :check_identity, :check_children, :check_memory, :check_cpu]
+    @process.watchers.keys.should == [:check_alive, :check_identity, :check_children, :check_memory]
     @process.children.keys.size.should == 3
     @process.children.keys.should == child_pids
     @process[:environment]["ENV2"].should == "SUPER"
@@ -29,7 +29,7 @@ describe "#update_config" do
   end
 
   it "update watchers" do
-    @process.watchers.keys.should == [:check_alive, :check_identity, :check_children, :check_memory, :check_cpu]
+    @process.watchers.keys.should == [:check_alive, :check_identity, :check_children, :check_memory]
     @process.children.keys.size.should == 3
     child_pids = @process.children.keys
 
@@ -44,7 +44,7 @@ describe "#update_config" do
   end
 
   it "when disable monitor_children they should remove" do
-    @process.watchers.keys.should == [:check_alive, :check_identity, :check_children, :check_memory, :check_cpu]
+    @process.watchers.keys.should == [:check_alive, :check_identity, :check_children, :check_memory]
     @process.children.keys.size.should == 3
     child_pids = @process.children.keys
 
@@ -52,11 +52,9 @@ describe "#update_config" do
     sleep 5
 
     @process.state_name.should == :up
-    @process.watchers.keys.should == [:check_alive, :check_identity, :check_memory, :check_cpu]
+    @process.watchers.keys.should == [:check_alive, :check_identity, :check_memory]
     @process.children.keys.size.should == 0
     @process.pid.should == @pid
   end
 
 end
-
-

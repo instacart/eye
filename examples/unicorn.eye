@@ -23,7 +23,6 @@ Eye.application 'rails_unicorn' do
     # soft restart
     restart_command 'kill -USR2 {PID}'
 
-    check :cpu, every: 30, below: 80, times: 3
     check :memory, every: 30, below: 150.megabytes, times: [3, 5]
 
     start_timeout 100.seconds
@@ -31,7 +30,6 @@ Eye.application 'rails_unicorn' do
 
     monitor_children do
       stop_command 'kill -QUIT {PID}'
-      check :cpu, every: 30, below: 80, times: 3
       check :memory, every: 30, below: 150.megabytes, times: [3, 5]
     end
   end

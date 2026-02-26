@@ -10,7 +10,6 @@ def sidekiq_process(proxy, name)
     daemonize true
     stop_signals [:USR1, 0, :TERM, 10.seconds, :KILL]
 
-    check :cpu, every: 30, below: 100, times: 5
     check :memory, every: 30, below: 300.megabytes, times: 5
   end
 end

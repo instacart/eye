@@ -8,7 +8,7 @@ describe "ChildProcess" do
     end
 
     it "should just monitoring, and do nothin" do
-      start_ok_process(C.p3.merge(:monitor_children => {:checks => join(C.check_mem, C.check_cpu)}))
+      start_ok_process(C.p3.merge(:monitor_children => {:checks => C.check_mem}))
       sleep 6
 
       @process.state_name.should == :up
@@ -18,7 +18,7 @@ describe "ChildProcess" do
 
       @children = @process.children.values
       @children.each do |child|
-        child.watchers.keys.should == [:check_memory, :check_cpu]
+        child.watchers.keys.should == [:check_memory]
         dont_allow(child).schedule :restart
       end
 
@@ -26,7 +26,7 @@ describe "ChildProcess" do
     end
 
     it "should check children even when one of them respawned" do
-      start_ok_process(C.p3.merge(:monitor_children => {:checks => join(C.check_mem, C.check_cpu)}, :children_update_period => Eye::SystemResources::cache.expire + 1))
+      start_ok_process(C.p3.merge(:monitor_children => {:checks => C.check_mem}, :children_update_period => Eye::SystemResources::cache.expire + 1))
       @process.watchers.keys.should == [:check_alive, :check_identity, :check_children]
 
       sleep 6 # ensure that children are found
@@ -45,14 +45,14 @@ describe "ChildProcess" do
 
       @children = @process.children.values
       @children.each do |child|
-        child.watchers.keys.should == [:check_memory, :check_cpu]
+        child.watchers.keys.should == [:check_memory]
         dont_allow(child).schedule :restart
       end
     end
 
     it "some child get condition" do
       start_ok_process(C.p3.merge(:monitor_children => {:checks =>
-        join(C.check_mem, C.check_cpu(:below => 50, :times => 2))}))
+        C.check_mem(:below => 50.megabytes, :times => 2)}))
       sleep 6
 
       @process.children.size.should == 3
@@ -61,15 +61,15 @@ describe "ChildProcess" do
       crazy = @children.shift
 
       @children.each do |child|
-        child.watchers.keys.should == [:check_memory, :check_cpu]
+        child.watchers.keys.should == [:check_memory]
         dont_allow(child).schedule :command => :restart
       end
 
-      stub(Eye::SystemResources).cpu(crazy.pid){ 55 }
-      stub(Eye::SystemResources).cpu(anything){ 5 }
+      stub(Eye::SystemResources).memory(crazy.pid){ 55.megabytes }
+      stub(Eye::SystemResources).memory(anything){ 5.megabytes }
 
-      crazy.watchers.keys.should == [:check_memory, :check_cpu]
-      mock(crazy).notify(:warn, "Bounded cpu(<50%): [*55%, *55%] send to [:restart]")
+      crazy.watchers.keys.should == [:check_memory]
+      mock(crazy).notify(:warn, "Bounded memory(<50Mb): [*55Mb, *55Mb] send to [:restart]")
       mock(crazy).schedule :command => :restart
 
       sleep 4
