@@ -30,8 +30,6 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rr', '1.1.2'
   gem.add_development_dependency 'ruby-graphviz'
   gem.add_development_dependency 'forking'
-  gem.add_development_dependency 'xmpp4r'
-  gem.add_development_dependency 'slack-notifier'
   gem.add_development_dependency 'coveralls'
   gem.add_development_dependency 'tins', '1.6.0' # for coveralls
   gem.add_development_dependency 'simplecov', '>= 0.8.1'
