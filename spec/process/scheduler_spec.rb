@@ -245,7 +245,7 @@ describe "Scheduler" do
     it "not crashing on exception" do
       @process.schedule(command: :instance_exec, block: -> { 1 + "bla" })
       sleep 0.1
-      @process.alive?.should be_true
+      @process.alive?.should be_truthy
     end
   end
 

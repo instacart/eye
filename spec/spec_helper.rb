@@ -1,4 +1,3 @@
-require 'rubygems'
 require "bundler/setup"
 Bundler.setup
 Eye::Sigar
@@ -11,12 +10,6 @@ if ENV['COV']
   SimpleCov.start do
     add_filter "/bundle/"
   end
-end
-
-if ENV['COVA']
-  ENV["COVERALLS_SILENT"] = '1'
-  require 'coveralls'
-  Coveralls.wear_merged!
 end
 
 # preload
@@ -58,18 +51,23 @@ STDERR.reopen($logger_path)
 $logger.info "specs started in process #{$$}"
 
 RSpec.configure do |config|
-  if ENV['PROFILE']
-    require 'parallel_tests/rspec/runtime_logger'
-    config.formatters << ParallelTests::RSpec::RuntimeLogger.new("spec/weights.txt")
+  config.expect_with :rspec do |expectations|
+    expectations.syntax = [:should, :expect]
   end
 
-  config.mock_with :rr
+  if ENV['PROFILE']
+    require 'parallel_tests/rspec/runtime_logger'
+    config.add_formatter ParallelTests::RSpec::RuntimeLogger, "spec/weights.txt"
+  end
+
+  config.mock_with RR::Integrations::RSpec2::Mixin
+  config.include RR::DSL
 
   config.before(:all) do
     Eye::SystemResources.cache.setup_expire(1.0)
   end
 
-  config.before(:each) do
+  config.before(:each) do |example|
     SimpleCov.command_name "RSpec:#{Process.pid}#{ENV['TEST_ENV_NUMBER']}" if defined?(SimpleCov)
 
     clear_pids
