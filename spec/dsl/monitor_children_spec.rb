@@ -47,12 +47,12 @@ describe "Eye::Dsl" do
           process("1") do
             pid_file "1.pid"
             monitor_children{
-              checks :cpu,    :below => 100, :every => 20.seconds
+              checks :memory, :below => 100, :every => 20.seconds
             }
           end
         end
       E
-      Eye::Dsl.parse_apps(conf).should == {"bla" => {:name => "bla", :groups=>{"__default__"=>{:name => "__default__", :application => "bla", :processes=>{"1"=>{:pid_file=>"1.pid", :monitor_children=>{:checks=>{:cpu=>{:below=>100, :every=>20, :type=>:cpu}}}, :application=>"bla", :group=>"__default__", :name=>"1"}}}}}}
+      Eye::Dsl.parse_apps(conf).should == {"bla" => {:name => "bla", :groups=>{"__default__"=>{:name => "__default__", :application => "bla", :processes=>{"1"=>{:pid_file=>"1.pid", :monitor_children=>{:checks=>{:memory=>{:below=>100, :every=>20, :type=>:memory}}}, :application=>"bla", :group=>"__default__", :name=>"1"}}}}}}
     end
 
     it "child should not inherit checks" do
@@ -60,13 +60,13 @@ describe "Eye::Dsl" do
         Eye.application("bla") do
           process("1") do
             pid_file "1.pid"
-            checks :cpu,    :below => 100, :every => 20.seconds
+            checks :memory, :below => 100, :every => 20.seconds
             monitor_children{
             }
           end
         end
       E
-      Eye::Dsl.parse_apps(conf).should == {"bla" => {:name=>"bla", :groups=>{"__default__"=>{:name=>"__default__", :application=>"bla", :processes=>{"1"=>{:name=>"1", :application=>"bla", :group=>"__default__", :pid_file=>"1.pid", :checks=>{:cpu=>{:below=>100, :every=>20, :type=>:cpu}}, :monitor_children=>{}}}}}}}
+      Eye::Dsl.parse_apps(conf).should == {"bla" => {:name=>"bla", :groups=>{"__default__"=>{:name=>"__default__", :application=>"bla", :processes=>{"1"=>{:name=>"1", :application=>"bla", :group=>"__default__", :pid_file=>"1.pid", :checks=>{:memory=>{:below=>100, :every=>20, :type=>:memory}}, :monitor_children=>{}}}}}}}
     end
 
     it "trigger should raise" do

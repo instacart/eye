@@ -1,1 +1,1 @@
-Eye.config { http enable: true }
+Eye.config { logger_level 1 }

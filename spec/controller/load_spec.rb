@@ -329,19 +329,19 @@ describe "Eye::Controller::Load" do
     it "should corrent load config section" do
       subject.load(fixture("dsl/configs/{1,2}.eye")).should_be_ok(2)
       Eye::Logger.dev.should == "/tmp/a.log"
-      subject.current_config.settings.should == {:logger=>["/tmp/a.log"], :http=>{:enable=>true}}
+      subject.current_config.settings.should == {:logger=>["/tmp/a.log"], :logger_level=>1}
 
       subject.load(fixture("dsl/configs/3.eye")).should_be_ok
       Eye::Logger.dev.should == "/tmp/a.log"
-      subject.current_config.settings.should == {:logger=>["/tmp/a.log"], :http=>{:enable=>false}}
+      subject.current_config.settings.should == {:logger=>["/tmp/a.log"], :logger_level=>0}
 
       subject.load(fixture("dsl/configs/4.eye")).should_be_ok
       Eye::Logger.dev.should == nil
-      subject.current_config.settings.should == {:logger=>[nil], :http=>{:enable=>false}}
+      subject.current_config.settings.should == {:logger=>[nil], :logger_level=>0}
 
       subject.load(fixture("dsl/configs/2.eye")).should_be_ok
       Eye::Logger.dev.should == nil
-      subject.current_config.settings.should == {:logger=>[nil], :http=>{:enable=>true}}
+      subject.current_config.settings.should == {:logger=>[nil], :logger_level=>1}
     end
 
     it "should load not settled config option" do

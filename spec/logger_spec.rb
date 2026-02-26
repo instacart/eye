@@ -13,7 +13,7 @@ describe "Eye::Logger" do
     Eye::Process.logger.prefix.should == "Eye::Process"
     Eye.logger.prefix.should == "Eye"
     Eye::Checker.logger.prefix.should == "Eye::Checker"
-    Eye::Checker.create(123, {:type => :cpu, :every => 5.seconds, :times => 1}, A22.new).logger.prefix.should == "some"
+    Eye::Checker.create(123, {:type => :memory, :every => 5.seconds, :times => 1, :below => 100}, A22.new).logger.prefix.should == "some"
     Eye::Server.new(C.socket_path).logger.prefix.should == "<Eye::Server>"
     Eye::Controller.new.logger.prefix.should == "Eye"
     Eye::Process.new(C.p1).logger.prefix.should == "main:default:blocking process"
