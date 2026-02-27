@@ -88,12 +88,13 @@ describe "comamnd spec" do
       it "should user_schedule #{cmd}" do
         sleep 0.3
         any_instance_of(Eye::Process) do |p|
-          dont_allow(p).user_schedule(:command => cmd)
+          dont_allow(p).user_schedule(hash_including(:command => cmd))
         end
 
-        mock(@p1).user_schedule(:command => cmd)
+        mock(@p1).user_schedule(hash_including(:command => cmd))
 
         subject.apply %w{p1}, :command => cmd, :some_flag => true
+        sleep 0.3
       end
     end
 
@@ -126,19 +127,21 @@ describe "comamnd spec" do
     it "delete obj" do
       sleep 0.5
       any_instance_of(Eye::Process) do |p|
-        dont_allow(p).send_call(:command => :delete)
+        dont_allow(p).send_call(hash_including(:command => :delete))
       end
 
-      mock(@p1).send_call(:command => :delete)
+      mock(@p1).send_call(hash_including(:command => :delete))
       subject.apply %w{p1}, :command => :delete
+      sleep 0.3
 
       subject.all_processes.should_not include(@p1)
       subject.all_processes.should include(@p2)
     end
 
     it "user_command" do
-      mock(@p1).send_call(:command => :user_command, :args => %w{jopa})
+      mock(@p1).send_call(hash_including(:command => :user_command, :args => %w{jopa}))
       subject.apply %w{p1}, :command => :user_command, :args => %w{jopa}
+      sleep 0.3
     end
   end
 

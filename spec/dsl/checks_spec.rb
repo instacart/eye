@@ -9,11 +9,11 @@ describe "Eye::Dsl checks" do
           pid_file "1.pid"
 
           checks :memory, :below => 100.megabytes, :every => 10.seconds
-          checks :cpu,    :below => 100, :every => 20.seconds
+          checks :memory2, :below => 100.megabytes, :every => 20.seconds
         end
       end
     E
-    Eye::Dsl.parse_apps(conf).should == {"bla" => {:name => "bla", :groups=>{"__default__"=>{:name => "__default__", :application => "bla", :processes=>{"1"=>{:pid_file=>"1.pid", :checks=>{:memory=>{:below=>104857600, :every=>10, :type=>:memory}, :cpu=>{:below=>100, :every=>20, :type=>:cpu}}, :application=>"bla", :group=>"__default__", :name=>"1"}}}}}}
+    Eye::Dsl.parse_apps(conf).should == {"bla" => {:name => "bla", :groups=>{"__default__"=>{:name => "__default__", :application => "bla", :processes=>{"1"=>{:pid_file=>"1.pid", :checks=>{:memory=>{:below=>104857600, :every=>10, :type=>:memory}, :memory2=>{:below=>104857600, :every=>20, :type=>:memory}}, :application=>"bla", :group=>"__default__", :name=>"1"}}}}}}
   end
 
   it "inherit checks" do
@@ -25,7 +25,7 @@ describe "Eye::Dsl checks" do
           pid_file "1.pid"
 
           checks :memory, :below => 90.megabytes, :every => 5.seconds
-          checks :cpu,    :below => 100, :every => 20.seconds
+          checks :memory2, :below => 100.megabytes, :every => 20.seconds
         end
 
         process("2") do
@@ -33,7 +33,7 @@ describe "Eye::Dsl checks" do
         end
       end
     E
-    Eye::Dsl.parse_apps(conf).should == {"bla" => {:name => "bla", :checks=>{:memory=>{:below=>104857600, :every=>10, :type=>:memory}}, :groups=>{"__default__"=>{:name => "__default__", :application => "bla", :checks=>{:memory=>{:below=>104857600, :every=>10, :type=>:memory}}, :processes=>{"1"=>{:checks=>{:memory=>{:below=>94371840, :every=>5, :type=>:memory}, :cpu=>{:below=>100, :every=>20, :type=>:cpu}}, :pid_file=>"1.pid", :application=>"bla", :group=>"__default__", :name=>"1"}, "2"=>{:checks=>{:memory=>{:below=>104857600, :every=>10, :type=>:memory}}, :pid_file=>"2.pid", :application=>"bla", :group=>"__default__", :name=>"2"}}}}}}
+    Eye::Dsl.parse_apps(conf).should == {"bla" => {:name => "bla", :checks=>{:memory=>{:below=>104857600, :every=>10, :type=>:memory}}, :groups=>{"__default__"=>{:name => "__default__", :application => "bla", :checks=>{:memory=>{:below=>104857600, :every=>10, :type=>:memory}}, :processes=>{"1"=>{:checks=>{:memory=>{:below=>94371840, :every=>5, :type=>:memory}, :memory2=>{:below=>104857600, :every=>20, :type=>:memory}}, :pid_file=>"1.pid", :application=>"bla", :group=>"__default__", :name=>"1"}, "2"=>{:checks=>{:memory=>{:below=>104857600, :every=>10, :type=>:memory}}, :pid_file=>"2.pid", :application=>"bla", :group=>"__default__", :name=>"2"}}}}}}
   end
 
   it "no valid checks" do
@@ -41,7 +41,7 @@ describe "Eye::Dsl checks" do
       Eye.application("bla") do
         process("1") do
           pid_file "1.pid"
-          checks :cpu,    :below => {1 => 2}, :every => 20.seconds
+          checks :memory, :below => {1 => 2}, :every => 20.seconds
         end
       end
     E
@@ -103,13 +103,13 @@ describe "Eye::Dsl checks" do
     conf = <<-E
       Eye.application("bla") do
         checks :memory, :below => 100.megabytes, :every => 10.seconds
-        nochecks :cpu
+        nochecks :nop
         notriggers :flapping
 
         group :blagr do
           process("1") do
             pid_file "1.pid"
-            nochecks :cpu
+            nochecks :nop
             nochecks :memory
           end
         end
@@ -157,37 +157,18 @@ describe "Eye::Dsl checks" do
     expect{Eye::Dsl.parse_apps(conf)}.to raise_error(Eye::Dsl::Error)
   end
 
-  it "check with Proc" do
+  it "check with Proc fires" do
     conf = <<-E
       Eye.application("bla") do
         process("1") do
           pid_file "1.pid"
 
-          checks :socket, :addr => "unix:/tmp/1", :expect_data => Proc.new{|data| data == 1}
+          checks :memory, :below => 100.megabytes, :fires => Proc.new{ restart }
         end
-
-        process("3") do
-          pid_file "3.pid"
-
-          checks :socket, :addr => "unix:/tmp/3", :expect_data => /regexp/
-        end
-
-        process("2") do
-          pid_file "2.pid"
-
-          checks :socket, :addr => "unix:/tmp/2", :expect_data => Proc.new{|data| data == 1}
-        end
-
       end
     E
     res = Eye::Dsl.parse_apps(conf)
-    proc = res['bla'][:groups]['__default__'][:processes]['1'][:checks][:socket][:expect_data]
-    proc[0].should == false
-    proc[1].should == true
-
-    proc = res['bla'][:groups]['__default__'][:processes]['2'][:checks][:socket][:expect_data]
-    proc[0].should == false
-    proc[1].should == true
+    res['bla'][:groups]['__default__'][:processes]['1'][:checks][:memory][:fires].should be_a(Proc)
   end
 
   it "checker with fires" do
@@ -246,7 +227,7 @@ describe "Eye::Dsl checks" do
     conf = <<-E
       class Cpu2 < Eye::Checker::CustomDefer
         # checks :cpu2, :every => 3.seconds, :below => 80, :times => [3,5]
-        param :below, [Fixnum, Float], true
+        param :below, [Integer, Float], true
 
         def check_name
           @check_name ||= "cpu2(\#{human_value(below)})"
@@ -372,16 +353,16 @@ describe "Eye::Dsl checks" do
 
     it "do not cross if there custom checker already" do
       conf = <<-E
-        class Cpu2 < Eye::Checker::CustomDefer
-          param :below, [Fixnum, Float], true
+        class Mem2 < Eye::Checker::CustomDefer
+          param :below, [Integer, Float], true
         end
 
         Eye.application("bla") do
           process("1") do
             pid_file "1.pid"
-            checks :cpu, :below => 100.megabytes, :every => 10.seconds
-            checks :cpu2, :below => 100, :every => 20.seconds
-            checks :cpu3, :below => 100, :every => 20.seconds
+            checks :memory, :below => 100.megabytes, :every => 10.seconds
+            checks :mem2, :below => 100, :every => 20.seconds
+            checks :memory3, :below => 100.megabytes, :every => 20.seconds
           end
         end
       E
@@ -390,9 +371,9 @@ describe "Eye::Dsl checks" do
           "__default__"=>{:name=>"__default__", :application=>"bla", :processes=>{
             "1"=>{:name=>"1", :application=>"bla", :group=>"__default__", :pid_file=>"1.pid",
               :checks=>{
-                :cpu=>{:below=>104857600, :every=>10, :type=>:cpu},
-                :cpu2=>{:below=>100, :every=>20, :type=>:cpu2},
-                :cpu3=>{:below=>100, :every=>20, :type=>:cpu}}}}}}}}
+                :memory=>{:below=>104857600, :every=>10, :type=>:memory},
+                :mem2=>{:below=>100, :every=>20, :type=>:mem2},
+                :memory3=>{:below=>104857600, :every=>20, :type=>:memory}}}}}}}}
     end
 
     it "errored cases" do

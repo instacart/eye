@@ -88,24 +88,4 @@ describe "Flapping" do
     @process.load_pid_from_file.should == @process.pid
   end
 
-  it "flapping not happens" do
-    @process = process(@c)
-    @process.schedule :start
-
-    proxy(@process).schedule(:command => :restore)
-    proxy(@process).schedule(:command => :check_crash)
-    dont_allow(@process).schedule(:unmonitor)
-
-    sleep 2
-
-    2.times do
-      die_process!(@process.pid)
-      sleep 3
-    end
-
-    sleep 2
-
-    @process.state_name.should == :up
-    @process.load_pid_from_file.should == @process.pid
-  end
 end

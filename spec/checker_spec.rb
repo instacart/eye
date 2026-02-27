@@ -16,7 +16,7 @@ class Checker2 < Eye::Checker
   param :bla2, [String, Symbol], true
   param :bla3, [String, Symbol], true, "hi"
   param :bla4, [String, Symbol], false, "hi2"
-  param :bla5, [Fixnum, Float]
+  param :bla5, [Integer, Float]
 end
 
 describe "Eye::Checker" do

@@ -213,7 +213,7 @@ private
       sig = s.shift
       timeout = s.shift
       if sig && !([String, Symbol].include?(sig.class) || sig.is_a?(Integer))
-        raise Eye::Dsl::Error, "signal should be String, Symbol, Fixnum, not #{sig.inspect}"
+        raise Eye::Dsl::Error, "signal should be String, Symbol, Integer, not #{sig.inspect}"
       end
 
       if timeout && !timeout.is_a?(Numeric)

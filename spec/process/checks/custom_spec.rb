@@ -9,7 +9,7 @@ describe "Custom checks" do
     before :each do
       conf = <<-D
         class CustomCheck < Eye::Checker::Custom
-          param :below, [Fixnum, Float], true
+          param :below, [Integer, Float], true
 
           def initialize(*args)
             super
@@ -42,12 +42,12 @@ describe "Custom checks" do
     end
 
     it "should not restart" do
-      dont_allow(@process).schedule(:command => :restart)
+      dont_allow(@process).schedule(hash_including(:command => :restart))
       sleep 4
     end
 
     it "should restart" do
-      proxy(@process).schedule(:command => :restart)
+      proxy(@process).schedule(hash_including(:command => :restart))
       sleep 6
     end
   end

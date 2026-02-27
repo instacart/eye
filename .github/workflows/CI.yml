@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby:
+          - '3.3'
+          - '3.4'
+          - '4.0'
+          - head
+        group: [1, 2, 3, 4]
+    continue-on-error: ${{ matrix.ruby == 'head' }}
+    name: Ruby ${{ matrix.ruby }} (group ${{ matrix.group }}/4)
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: Run spec group
+        env:
+          GROUP: ${{ matrix.group }}
+          TOTAL_GROUPS: 4
+        run: |
+          group_specs=$(ruby ci/split_specs.rb)
+          echo "=== Group $GROUP/$TOTAL_GROUPS ==="
+          echo "$group_specs"
+          echo "=== Running $(echo "$group_specs" | wc -w) spec files ==="
+          bundle exec rspec --force-color \
+            --format progress \
+            --format json --out /tmp/rspec_results.json \
+            $group_specs
+      - name: Upload spec timing
+        if: always() && matrix.ruby == '3.4'
+        uses: actions/upload-artifact@v4
+        with:
+          name: rspec-timings-group-${{ matrix.group }}
+          path: /tmp/rspec_results.json
+  rubocop:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+      - run: bundle exec rubocop --parallel --color

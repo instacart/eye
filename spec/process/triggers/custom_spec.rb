@@ -99,7 +99,7 @@ end
 class DeleteFileEventA2 < Eye::Trigger::Custom
   param :file, [String], true
   param :on, [Symbol]
-  param :what, [Fixnum]
+  param :what, [Integer]
 
   def check(transition)
     if transition.to_name == on

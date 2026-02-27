@@ -62,5 +62,4 @@ Eye.application 'test' do
       check :memory, below: 300.megabytes, times: 3
     end
   end
-
 end
