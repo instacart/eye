@@ -23,7 +23,6 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'celluloid-io',  '~> 0.17.0'
   gem.add_dependency 'state_machines'
   gem.add_dependency 'thor'
-  gem.add_dependency 'kostya-sigar', '~> 2.0.0'
   gem.add_dependency 'ostruct'
 
   gem.add_development_dependency 'rake'
