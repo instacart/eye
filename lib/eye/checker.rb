@@ -3,10 +3,15 @@ class Eye::Checker
   include Eye::Dsl::Validation
 
   autoload :Memory,         'eye/checker/memory'
+  autoload :PrivateMemory,  'eye/checker/private_memory'
+  autoload :SharedMemory,   'eye/checker/shared_memory'
   autoload :Nop,            'eye/checker/nop'
   autoload :ChildrenMemory, 'eye/checker/children_memory'
 
-  TYPES = { memory: 'Memory', nop: 'Nop', children_memory: 'ChildrenMemory' }
+  TYPES = {
+    memory: 'Memory', private_memory: 'PrivateMemory', shared_memory: 'SharedMemory',
+    nop: 'Nop', children_memory: 'ChildrenMemory'
+  }
 
   attr_accessor :value, :values, :options, :pid, :type, :check_count, :process
 
